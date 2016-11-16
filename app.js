@@ -74,8 +74,15 @@ var ProductAdministrationComponent = React.createClass({
   },
 
   render: function() {
+    var title;
+    if (this.props.params.id) {
+      title = 'Atnaujinamas produktas ' + this.props.params.id;
+    } else {
+      title = 'Kuriamas naujas produktas';
+    }
     return (
       <div>
+        <h2>{title}</h2>
         <form>
           <div className="form-group">
             <label>Title</label>
@@ -128,7 +135,6 @@ var ProductListComponent = function(props) {
   });
   return (
     <div className="row">
-      <ProductAdministrationComponent />
       {productCards}</div>
     );
 };
@@ -161,4 +167,43 @@ var testProducts = [
   }
 ];
 
-ReactDOM.render(<ProductListComponent products={testProducts} />, document.getElementById('root'))
+var App = function(props) {
+  return <div>{props.children}</div>;
+};
+var ProductListPage = function () {
+  return <ProductListComponent products={testProducts} />
+}
+var NoMatch = function(props) {
+  return <div>Route did not match</div>;
+};
+
+var SomePageComponent = function(props) {
+  var goRoot = function(e) {
+    props.router.push("/");
+  }
+  return (
+    <div>
+      At route: {props.router.getCurrentLocation().pathname}
+      <button onClick={goRoot}>Go to Root route</button>
+      <pre>
+        {JSON.stringify(props, null, 2)}
+      </pre>
+    </div>
+  );
+};
+
+var Router = window.ReactRouter.Router;
+var Route = window.ReactRouter.Route;
+var IndexRoute = window.ReactRouter.IndexRoute;
+
+ReactDOM.render((
+  <Router history={window.ReactRouter.hashHistory}>
+    <Route path="/" component={App}>
+      <IndexRoute component={ProductListPage} />
+      <Route path="/products" component={ProductListPage} />
+      <Route path="/admin/products/new" component={ProductAdministrationComponent} />
+      <Route path="/admin/products/:id" component={ProductAdministrationComponent} />
+      <Route path="*" component={NoMatch}/>
+    </Route>
+  </Router>
+), document.getElementById('root'));

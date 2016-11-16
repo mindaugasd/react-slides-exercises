@@ -37,35 +37,79 @@ ProductCardComponent.propTypes = {
   price: PropTypes.number.isRequired,
 };
 
-var SelfDestructTimerComponent = React.createClass({
+var ProductAdministrationComponent = React.createClass({
   getInitialState: function() {
     return {
-      countdown: 42,
-      intervalId: -1,
-    }
+      image: '',
+      title: '',
+      description: '',
+      price: 0,
+      quantity: 0,
+    };
   },
 
-  componentWillMount: function() {
-    this.setState({ intervalId: setInterval(this.countdown, 1000) });
+  handleSaveClick: function(e) {
+    console.log(this.state);
+    e.preventDefault();
   },
 
-  componentWillUnmount: function() {
-    clearInterval(this.state.intervalId);
+  onTitleChange: function(e) {
+    this.setState({ title: e.target.value });
   },
 
-  countdown() {
-    var currentCountdown = this.state.countdown
-    if (this.state.countdown > 0) {
-      this.setState({ countdown: currentCountdown - 1})
-    }
+  onImageChange: function(e) {
+    this.setState({ image: e.target.value });
+  },
+
+  onDescriptionChange: function(e) {
+    this.setState({ description: e.target.value });
+  },
+
+  onPriceChange: function(e) {
+    this.setState({ price: e.target.value });
+  },
+
+  onQuantityChange: function(e) {
+    this.setState({ quantity: e.target.value });
   },
 
   render: function() {
-    var style = {};
-    if (this.state.countdown < 1) {
-      style.background = 'red';
-    }
-    return (<div style={style}>{this.state.countdown}</div>);
+    return (
+      <div>
+        <form>
+          <div className="form-group">
+            <label>Title</label>
+            <input className="form-control" value={this.state.title} onChange={this.onTitleChange} />
+          </div>
+          <div className="form-group">
+            <label>Image url</label>
+            <input className="form-control" value={this.state.image} onChange={this.onImageChange} />
+          </div>
+          <div className="form-group">
+            <label>Description</label>
+            <input
+              className="form-control"
+              value={this.state.description}
+              onChange={this.onDescriptionChange}
+            />
+          </div>
+          <div className="form-group">
+            <label>Price</label>
+            <input className="form-control" value={this.state.price} onChange={this.onPriceChange} />
+          </div>
+          <div className="form-group">
+            <label>Quantity</label>
+            <input
+              className="form-control"
+              value={this.state.quantity}
+              onChange={this.onQuantityChange}
+            />
+          </div>
+
+          <button className="btn btn-success" style={{ marginRight: '20px' }} onClick={this.handleSaveClick}>Save</button>
+        </form>
+      </div>
+    );
   }
 });
 
@@ -84,7 +128,7 @@ var ProductListComponent = function(props) {
   });
   return (
     <div className="row">
-      <SelfDestructTimerComponent />
+      <ProductAdministrationComponent />
       {productCards}</div>
     );
 };

@@ -139,39 +139,34 @@ var ProductListComponent = function(props) {
     );
 };
 
+var ProductListContainer = React.createClass({
+  getInitialState: function() {
+    return { products: [] };
+  },
+
+  componentWillMount: function() {
+    var self = this;
+    axios.get('https://itakademija.herokuapp.com/api/products')
+      .then(function (response) {
+        self.setState({ products: response.data });
+      })
+  },
+
+  render: function() {
+    return <ProductListComponent products={this.state.products} />
+  }
+});
 ProductListComponent.propTypes = {
   products: React.PropTypes.array.isRequired,
 };
 
-var testProducts = [
-  {
-    id: 1,
-    image: 'samsung.jpg',
-    title: 'Telephons',
-    description: 'Fainas',
-    price:2.5
-  },
-  {
-    id: 2,
-    image: 'samsung.jpg',
-    title: 'Telephons 2',
-    description: 'Fainas',
-    price:2.7
-  },
-  {
-    id: 3,
-    image: 'samsung.jpg',
-    title: 'Telephons 3',
-    description: 'Fainas',
-    price:2.8
-  }
-];
+
 
 var App = function(props) {
   return <div>{props.children}</div>;
 };
 var ProductListPage = function () {
-  return <ProductListComponent products={testProducts} />
+  return <ProductListContainer />
 }
 var NoMatch = function(props) {
   return <div>Route did not match</div>;

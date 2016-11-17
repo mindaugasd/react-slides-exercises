@@ -37,85 +37,139 @@ ProductCardComponent.propTypes = {
   price: PropTypes.number.isRequired,
 };
 
-var ProductAdministrationComponent = React.createClass({
+var ProductAdministrationComponent = function(props) {
+  var title;
+  if (props.id) {
+    title = 'Atnaujinamas produktas ' + props.params.id;
+  } else {
+    title = 'Kuriamas naujas produktas';
+  }
+  return (
+    <div>
+      <h2>{title}</h2>
+      <form>
+        <div className="form-group">
+          <label>Title</label>
+          <input className="form-control" value={props.title} onChange={props.onTitleChange} />
+        </div>
+        <div className="form-group">
+          <label>Image url</label>
+          <input className="form-control" value={props.image} onChange={props.onImageChange} />
+        </div>
+        <div className="form-group">
+          <label>Description</label>
+          <input
+            className="form-control"
+            value={props.description}
+            onChange={props.onDescriptionChange}
+          />
+        </div>
+        <div className="form-group">
+          <label>Price</label>
+          <input className="form-control" value={props.price} onChange={props.onPriceChange} />
+        </div>
+        <div className="form-group">
+          <label>Quantity</label>
+          <input
+            className="form-control"
+            value={props.quantity}
+            onChange={props.onQuantityChange}
+          />
+        </div>
+
+        <button className="btn btn-success" style={{ marginRight: '20px' }} onClick={props.onSaveClick}>Save</button>
+      </form>
+    </div>
+  );
+};
+
+ProductAdministrationComponent.propTypes = {
+  id: React.PropTypes.string,
+  image: React.PropTypes.string.isRequired,
+  title: React.PropTypes.string.isRequired,
+  description: React.PropTypes.string.isRequired,
+  price: React.PropTypes.any.isRequired,
+  quantity: React.PropTypes.any.isRequired,
+
+  onImageChange: React.PropTypes.func.isRequired,
+  onTitleChange: React.PropTypes.func.isRequired,
+  onDescriptionChange: React.PropTypes.func.isRequired,
+  onPriceChange: React.PropTypes.func.isRequired,
+  onQuantityChange: React.PropTypes.func.isRequired,
+  onSaveClick: React.PropTypes.func.isRequired,
+};
+var ProductAdministrationContainer = React.createClass({
   getInitialState: function() {
     return {
+      id: this.props.params.id,
       image: '',
       title: '',
       description: '',
       price: 0,
-      quantity: 0,
+      quantity: 0
     };
   },
 
   handleSaveClick: function(e) {
-    console.log(this.state);
+    var self = this;
+    var body = {
+      image: this.state.image,
+      title: this.state.title,
+      description: this.state.description,
+      price: this.state.price,
+      quantity: this.state.quantity
+    }
+    axios.post('https://itakademija.herokuapp.com/api/products', body)
+      .then(function (response) {
+        var p = response.data;
+        self.setState({
+          image: p.image,
+          title: p.title,
+          description: p.description,
+          price: p.price,
+          quantity: p.quantity
+      });
+      self.props.router.push('/admin/products/' + p.id);
+    });
     e.preventDefault();
   },
 
-  onTitleChange: function(e) {
+  handleTitleChange: function(e) {
     this.setState({ title: e.target.value });
   },
 
-  onImageChange: function(e) {
+  handleImageChange: function(e) {
     this.setState({ image: e.target.value });
   },
 
-  onDescriptionChange: function(e) {
+  handleDescriptionChange: function(e) {
     this.setState({ description: e.target.value });
   },
 
-  onPriceChange: function(e) {
+  handlePriceChange: function(e) {
     this.setState({ price: e.target.value });
   },
 
-  onQuantityChange: function(e) {
+  handleQuantityChange: function(e) {
     this.setState({ quantity: e.target.value });
   },
 
   render: function() {
-    var title;
-    if (this.props.params.id) {
-      title = 'Atnaujinamas produktas ' + this.props.params.id;
-    } else {
-      title = 'Kuriamas naujas produktas';
-    }
     return (
-      <div>
-        <h2>{title}</h2>
-        <form>
-          <div className="form-group">
-            <label>Title</label>
-            <input className="form-control" value={this.state.title} onChange={this.onTitleChange} />
-          </div>
-          <div className="form-group">
-            <label>Image url</label>
-            <input className="form-control" value={this.state.image} onChange={this.onImageChange} />
-          </div>
-          <div className="form-group">
-            <label>Description</label>
-            <input
-              className="form-control"
-              value={this.state.description}
-              onChange={this.onDescriptionChange}
-            />
-          </div>
-          <div className="form-group">
-            <label>Price</label>
-            <input className="form-control" value={this.state.price} onChange={this.onPriceChange} />
-          </div>
-          <div className="form-group">
-            <label>Quantity</label>
-            <input
-              className="form-control"
-              value={this.state.quantity}
-              onChange={this.onQuantityChange}
-            />
-          </div>
-
-          <button className="btn btn-success" style={{ marginRight: '20px' }} onClick={this.handleSaveClick}>Save</button>
-        </form>
-      </div>
+      <ProductAdministrationComponent
+        id={this.state.id}
+        image={this.state.image}
+        title={this.state.title}
+        description={this.state.description}
+        price={this.state.price}
+        quantity={this.state.quantity}
+        onImageChange={this.handleImageChange}
+        onTitleChange={this.handleTitleChange}
+        onDescriptionChange={this.handleDescriptionChange}
+        onPriceChange={this.handlePriceChange}
+        onQuantityChange={this.handleQuantityChange}
+        onSaveClick={this.handleSaveClick}
+      />
     );
   }
 });
@@ -196,8 +250,8 @@ ReactDOM.render((
     <Route path="/" component={App}>
       <IndexRoute component={ProductListPage} />
       <Route path="/products" component={ProductListPage} />
-      <Route path="/admin/products/new" component={ProductAdministrationComponent} />
-      <Route path="/admin/products/:id" component={ProductAdministrationComponent} />
+      <Route path="/admin/products/new" component={ProductAdministrationContainer} />
+      <Route path="/admin/products/:id" component={ProductAdministrationContainer} />
       <Route path="*" component={NoMatch}/>
     </Route>
   </Router>

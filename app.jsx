@@ -94,16 +94,18 @@ var styles = {
             textAlign: 'center',
             marginLeft: 'auto',
             marginRight: 'auto',
-            }
+            },
+        image: {
+            height: '200px', display: 'block'
+        }
 }
 
 var ProductCardComponent = React.createClass( {
     render: function() {
         return (
-            <div className="container">
                 <div className="col-sm-6 col-md-4">
                     <div className="thumbnail" style={styles.thumbnail}>
-                        <img src={this.props.image} alt="image" />
+                        <img src={this.props.image} alt="image" style={styles.image} />
                         <div className="caption">
                             <h3>{this.props.title}</h3>
                             <p>${this.props.price}</p>
@@ -112,7 +114,6 @@ var ProductCardComponent = React.createClass( {
                         </div>
                     </div>
                 </div>
-            </div>
         );
     }
 });
@@ -143,7 +144,7 @@ ProductListComponent.propTypes = {
 
 var myProducts = [
     {
-        image: 'http://i1.adis.ws/i/canon/canon-DSLR-cameras-800x800?w=350&q=70',
+        image: 'https://www.usa.canon.com/internet/wcm/connect/us/0265b57f-d9dd-46fc-b0c6-460b0ee67488/t6s_3q-675x450.jpg?MOD=AJPERES&CACHEID=ROOTWORKSPACE.Z18_P1KGHJ01L85180AUEPQQJ53034-0265b57f-d9dd-46fc-b0c6-460b0ee67488-l20WdTS',
         title: 'Canon 550D',
         price: 100
     },

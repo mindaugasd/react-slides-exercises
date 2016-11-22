@@ -1,32 +1,6 @@
 console.log( 'Pasileido' )
 
-var ProductCardComponent = React.createClass( {
-    render: function() {
-        return (
-            <div>
-                <div className="row">
-                    <div className="col-sm-6 col-md-4">
-                        <div className="thumbnail">
-                            <img src={this.props.url} alt="..." />
-                            <div className="caption">
-                                <h3>{this.props.title}</h3>
-                                <p>{this.props.price}</p>
-                                <p><a href="#" className="btn btn-primary" role="button">Buy</a></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-});
-ProductCardComponent.propTypes = {
-    title: React.PropTypes.string.isRequired,
-    price: React.PropTypes.number.isRequired,
-};
-
 //SELF DESTRUCT
-
 var SelfDestructTimerComponent = React.createClass( {
     getInitialState: function() {
         return { count: 5 }
@@ -34,10 +8,6 @@ var SelfDestructTimerComponent = React.createClass( {
     componentWillMount: function() {
         setInterval( this.timer, 1000 )
     },
-
-    /*    componentWillUnmount: function() {
-            clearInterval( this.state.intervalId );
-        },*/
 
     timer: function() {
         if ( this.state.count > 0 ) {
@@ -49,7 +19,7 @@ var SelfDestructTimerComponent = React.createClass( {
         var countBackground;
         var isDestroyed = this.state.count <= 0
         if ( isDestroyed ) {
-            countBackground = { background: 'red' }
+            countBackground = { color: 'red' }
         }
         return (
             <div style={countBackground}>
@@ -70,48 +40,48 @@ var ProductAdministrationComponent = React.createClass( {
             title: 'default',
             image: 'default',
             description: 'default',
-            price: 'default',
+            price: 0,
             quantity: 0
         };
     },
 
     handleTitleChange: function( event ) {
-        this.setState({title: event.target.value});
+        this.setState( { title: event.target.value });
     },
 
     handleImageChange: function( event ) {
-        this.setState({image: event.target.value});
+        this.setState( { image: event.target.value });
     },
 
     handleDescriptionChange: function( event ) {
-        this.setState({description: event.target.value});
+        this.setState( { description: event.target.value });
     },
 
     handlePriceChange: function( event ) {
-        this.setState({price: event.target.value});
+        this.setState( { price: event.target.value });
     },
 
     handleQuantityChange: function( event ) {
-        this.setState({quantity: event.target.value});
+        this.setState( { quantity: event.target.value });
     },
 
     handleSubmit: function( event ) {
         console.log( 'Submitted', this.state );
         event.preventDefault();
     },
-    
+
     render: function() {
         return (
             <form onSubmit={this.handleSubmit}>
-                <label>Name:</label>
+                <label>Name:</label><br />
                 <input type="text" value={this.state.title} onChange={this.handleTitleChange} /><br />
-                <label>Image url:</label>
+                <label>Image url:</label><br />
                 <input type="text" value={this.state.image} onChange={this.handleImageChange} /><br />
-                <label>Description:</label>
+                <label>Description:</label><br />
                 <input type="text" value={this.state.description} onChange={this.handleDescriptionChange} /><br />
-                <label>Price:</label>
-                <input type="text" value={this.state.price} onChange={this.handlePriceChange} /><br />
-                <label>Qty.:</label>
+                <label>Price:</label><br />
+                <input type="number" step="any" value={this.state.price} onChange={this.handlePriceChange} /><br />
+                <label>Qty.:</label><br />
                 <input type="number" value={this.state.quantity} onChange={this.handleQuantityChange} /><br />
                 <input type="submit" value="Submit" />
             </form>
@@ -119,36 +89,80 @@ var ProductAdministrationComponent = React.createClass( {
     }
 });
 
+var styles = {
+        thumbnail: {
+            textAlign: 'center',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            }
+}
 
-
-
-
-var ProductListComponent = React.createClass( {
+var ProductCardComponent = React.createClass( {
     render: function() {
-        //var productsHtml = this.props.products.map(function (p,idx))
-
         return (
-            <div>
-                <p>Products list</p>
-
-                <ProductCardComponent title="Canon 5D" price={666} url="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Canon_EOS_5D.jpg/300px-Canon_EOS_5D.jpg" />
-                <ProductCardComponent title="Canon 550D" price={111} />
-                <ProductCardComponent title="Canon 1D" price={333} />
-
-                <SelfDestructTimerComponent />
-
-
+            <div className="container">
+                <div className="col-sm-6 col-md-4">
+                    <div className="thumbnail" style={styles.thumbnail}>
+                        <img src={this.props.image} alt="image" />
+                        <div className="caption">
+                            <h3>{this.props.title}</h3>
+                            <p>${this.props.price}</p>
+                            <p><a href="#" className="btn btn-primary" role="button">Buy</a></p>
+                            <SelfDestructTimerComponent />
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
 });
-ProductListComponent.propTypes = {
-
+ProductCardComponent.propTypes = {
+    image: React.PropTypes.string.isRequired,
+    title: React.PropTypes.string.isRequired,
+    price: React.PropTypes.number.isRequired,
 };
 
-var myProducts = [];
+var ProductListComponent = function( props ) {
+    var productCards = props.products.map( function( product, index ) {
+        return (
+
+            <ProductCardComponent
+                key={index}
+                image={product.image}
+                title={product.title}
+                price={product.price}
+                />
+        );
+    });
+    return ( <div className="row">{productCards} <ProductAdministrationComponent /> </div>);
+};
+
+ProductListComponent.propTypes = {
+    products: React.PropTypes.array.isRequired,
+};
+
+var myProducts = [
+    {
+        image: 'http://i1.adis.ws/i/canon/canon-DSLR-cameras-800x800?w=350&q=70',
+        title: 'Canon 550D',
+        price: 100
+    },
+    {
+        image: 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQ4C288aLyqFXAVm7kIXDQLCgEufb58wLK6NA5LdzbwW1MKCvBP',
+        title: 'Canon 50D',
+        price: 500
+    },
+    {
+        image: 'https://shop.usa.canon.com/wcsstore/ExtendedSitesCatalogAssetStore/35706_1_xl.jpg',
+        title: 'Canon 1D',
+        price: 1500
+    }
+
+
+
+];
 
 ReactDOM.render(
-    <ProductAdministrationComponent />,
+    <ProductListComponent products={myProducts} />,
     document.getElementById( 'root' )
 );

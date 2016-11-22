@@ -81,4 +81,4 @@ var testProducts = [
   }
 ];
 
-ReactDOM.render(<ProductListComponent products={testProducts} />, document.getElementById('root'))
+ReactDOM.render(<ProductListComponent products={testProducts} />, document.getElementById('root'));

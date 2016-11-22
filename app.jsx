@@ -42,7 +42,7 @@ var SelfDestructTimerComponent = React.createClass({
     return {
       countdown: 42,
       intervalId: -1,
-    }
+    };
   },
 
   componentWillMount: function() {
@@ -53,10 +53,10 @@ var SelfDestructTimerComponent = React.createClass({
     clearInterval(this.state.intervalId);
   },
 
-  countdown() {
-    var currentCountdown = this.state.countdown
+  countdown: function() {
+    var currentCountdown = this.state.countdown;
     if (this.state.countdown > 0) {
-      this.setState({ countdown: currentCountdown - 1})
+      this.setState({ countdown: currentCountdown - 1});
     }
   },
 
@@ -85,8 +85,8 @@ var ProductListComponent = function(props) {
   return (
     <div className="row">
       <SelfDestructTimerComponent />
-      {productCards}</div>
-    );
+      {productCards}
+    </div>);
 };
 
 ProductListComponent.propTypes = {
@@ -117,4 +117,4 @@ var testProducts = [
   }
 ];
 
-ReactDOM.render(<ProductListComponent products={testProducts} />, document.getElementById('root'))
+ReactDOM.render(<ProductListComponent products={testProducts} />, document.getElementById('root'));

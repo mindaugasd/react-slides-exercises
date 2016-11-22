@@ -129,8 +129,8 @@ var ProductListComponent = function(props) {
   return (
     <div className="row">
       <ProductAdministrationComponent />
-      {productCards}</div>
-    );
+      {productCards}
+    </div>);
 };
 
 ProductListComponent.propTypes = {
@@ -161,4 +161,4 @@ var testProducts = [
   }
 ];
 
-ReactDOM.render(<ProductListComponent products={testProducts} />, document.getElementById('root'))
+ReactDOM.render(<ProductListComponent products={testProducts} />, document.getElementById('root'));

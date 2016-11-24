@@ -1,5 +1,3 @@
-console.log( 'Pasileido' )
-
 //SELF DESTRUCT
 var SelfDestructTimerComponent = React.createClass( {
     getInitialState: function() {
@@ -31,8 +29,6 @@ var SelfDestructTimerComponent = React.createClass( {
 SelfDestructTimerComponent.propTypes = {
     // Properties JSON
 };
-
-
 
 var ProductAdministrationComponent = React.createClass( {
     getInitialState: function() {
@@ -71,8 +67,14 @@ var ProductAdministrationComponent = React.createClass( {
     },
 
     render: function() {
+/*        var title;
+        var id = this.props.params.id;
+        if (id === 'new') {
+            
+        }*/
         return (
             <form onSubmit={this.handleSubmit}>
+                <h3>Add new item</h3>
                 <label>Name:</label><br />
                 <input type="text" value={this.state.title} onChange={this.handleTitleChange} /><br />
                 <label>Image url:</label><br />
@@ -110,23 +112,23 @@ var ProductCardComponent = React.createClass( {
                             <h3>{this.props.title}</h3>
                             <p>${this.props.price}</p>
                             <p><a href="#" className="btn btn-primary" role="button">Buy</a></p>
-                            <SelfDestructTimerComponent />
                         </div>
                     </div>
                 </div>
         );
     }
 });
+
 ProductCardComponent.propTypes = {
     image: React.PropTypes.string.isRequired,
     title: React.PropTypes.string.isRequired,
     price: React.PropTypes.number.isRequired,
 };
 
+
 var ProductListComponent = function( props ) {
     var productCards = props.products.map( function( product, index ) {
         return (
-
             <ProductCardComponent
                 key={index}
                 image={product.image}
@@ -135,8 +137,27 @@ var ProductListComponent = function( props ) {
                 />
         );
     });
-    return ( <div className="row">{productCards} <ProductAdministrationComponent /> </div>);
+    return ( <div className="row">{productCards} </div>);
 };
+
+
+
+
+var ProductListContainer = React.createClass({
+    componentWillMount: function() {
+        var self = this;
+        axios.get('https://itakademija.herokuapp.com/api/products')
+        .then(function (response) {
+            self.setState({ product: response.data });
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+    },
+    render: function() {
+        return <ProductListComponent products={this.state.products} />
+  }
+});
 
 ProductListComponent.propTypes = {
     products: React.PropTypes.array.isRequired,
@@ -158,12 +179,32 @@ var myProducts = [
         title: 'Canon 1D',
         price: 1500
     }
-
-
-
 ];
 
-ReactDOM.render(
-    <ProductListComponent products={myProducts} />,
-    document.getElementById( 'root' )
-);
+var App = function(props) {
+    return <div>{props.children}</div>;
+};
+
+var NoMatch = function(props) {
+    return <div>Route did not match</div>;
+};
+  
+var ProductListPage = function() {
+    return <ProductListComponent products={myProducts} />
+} 
+
+
+var Router = window.ReactRouter.Router;
+var Route = window.ReactRouter.Route;
+var IndexRoute = window.ReactRouter.IndexRoute;
+ 
+ReactDOM.render((
+        <Router history={window.ReactRouter.hashHistory}>
+            <Route path="/" component={App}>
+                <Route path="/products" component={ProductListContainer} />
+                <Route path="/admin/products/new" component={ProductAdministrationComponent} />
+                <Route path="/admin/products/:id" component={ProductAdministrationComponent} />
+                <Route path="*" component={NoMatch}/>
+            </Route>
+        </Router>
+), document.getElementById('root'));

@@ -1,39 +1,44 @@
-//SELF DESTRUCT
-var SelfDestructTimerComponent = React.createClass( {
-    getInitialState: function() {
-        return { count: 5 }
-    },
-    componentWillMount: function() {
-        setInterval( this.timer, 1000 )
-    },
+var PropTypes = window.React.PropTypes;
 
-    timer: function() {
-        if ( this.state.count > 0 ) {
-            this.setState( { count: this.state.count - 1 })
-        }
-    },
+var ProductAdministrationComponent = function( props ) {
+    return (
+        <form>
+            <h3>Add new item</h3>
+            <label>Name:</label><br />
+            <input className="form-control" type="text" value={props.title} onChange={props.onTitleChange} /><br />
+            <label>Image url:</label><br />
+            <input className="form-control" type="text" value={props.image} onChange={props.onImageChange} /><br />
+            <label>Description:</label><br />
+            <input className="form-control" type="text" value={props.description} onChange={props.onDescriptionChange} /><br />
+            <label>Price:</label><br />
+            <input className="form-control" type="number" step="any" value={props.price} onChange={props.onPriceChange} /><br />
+            <label>Qty.:</label><br />
+            <input className="form-control" type="number" value={props.quantity} onChange={props.onQuantityChange} /><br />
+            <button className="btn btn-success" style={{ marginRight: '20px' }} onClick={props.handleSubmit}>Save</button>
+        </form>
 
-    render: function() {
-        var countBackground;
-        var isDestroyed = this.state.count <= 0
-        if ( isDestroyed ) {
-            countBackground = { color: 'red' }
-        }
-        return (
-            <div style={countBackground}>
-                Self destruct: {this.state.count}
-            </div>
-        );
-    }
-});
-SelfDestructTimerComponent.propTypes = {
-    // Properties JSON
+
+    );
 };
 
-var ProductAdministrationComponent = React.createClass( {
-    getInitialState: function() {
+ProductAdministrationComponent.propTypes = {
+        title: React.PropTypes.string.isRequired,
+        image: React.PropTypes.string.isRequired,
+        description: React.PropTypes.string.isRequired,
+        price: React.PropTypes.number.isRequired,
+        quantity: React.PropTypes.number.isRequired,
+
+        onTitleChange: React.PropTypes.func.isRequired,
+        onImageChange: React.PropTypes.func.isRequired,
+        onDescriptionChange: React.PropTypes.func.isRequired,
+        onPriceChange: React.PropTypes.func.isRequired,
+        onQuantityChange: React.PropTypes.func.isRequired
+};
+
+var ProductAdministrationContainer = React.createClass({
+                    getInitialState: function() {
         return {
-            title: 'default',
+                    title: 'default',
             image: 'default',
             description: 'default',
             price: 0,
@@ -42,64 +47,74 @@ var ProductAdministrationComponent = React.createClass( {
     },
 
     handleTitleChange: function( event ) {
-        this.setState( { title: event.target.value });
-    },
+                    this.setState( { title: event.target.value });
+                },
 
     handleImageChange: function( event ) {
-        this.setState( { image: event.target.value });
-    },
+                    this.setState( { image: event.target.value });
+                },
 
     handleDescriptionChange: function( event ) {
-        this.setState( { description: event.target.value });
-    },
+                    this.setState( { description: event.target.value });
+                },
 
     handlePriceChange: function( event ) {
-        this.setState( { price: event.target.value });
-    },
+                    this.setState( { price: event.target.value });
+                },
 
     handleQuantityChange: function( event ) {
-        this.setState( { quantity: event.target.value });
-    },
+                    this.setState( { quantity: event.target.value });
+                },
 
     handleSubmit: function( event ) {
-        console.log( 'Submitted', this.state );
+        var self = this;
+        axios.post('https://itakademija.herokuapp.com/api/products', {
+                    title: this.state.title,
+                    image: this.state.image,
+                    description: this.state.description,
+                    price: this.state.price,
+                    quantity: this.state.quantity
+        })
+        .then(function (response) {
+                    console.log( response );
+                })
+        .catch(function (error) {
+                    console.log( error );
+                });
+        
         event.preventDefault();
     },
 
-    render: function() {
-/*        var title;
-        var id = this.props.params.id;
-        if (id === 'new') {
-            
-        }*/
+    render: function() {   
         return (
-            <form onSubmit={this.handleSubmit}>
-                <h3>Add new item</h3>
-                <label>Name:</label><br />
-                <input type="text" value={this.state.title} onChange={this.handleTitleChange} /><br />
-                <label>Image url:</label><br />
-                <input type="text" value={this.state.image} onChange={this.handleImageChange} /><br />
-                <label>Description:</label><br />
-                <input type="text" value={this.state.description} onChange={this.handleDescriptionChange} /><br />
-                <label>Price:</label><br />
-                <input type="number" step="any" value={this.state.price} onChange={this.handlePriceChange} /><br />
-                <label>Qty.:</label><br />
-                <input type="number" value={this.state.quantity} onChange={this.handleQuantityChange} /><br />
-                <input type="submit" value="Submit" />
-            </form>
-        );
+        <ProductAdministrationComponent
+                    title={this.state.title}
+                    image={this.state.image}
+                    description={this.state.description}
+                    price={this.state.price}
+                    quantity={this.state.quantity}
+                    onTitleChange={this.handleTitleChange}
+                    onImageChange={this.handleImageChange}
+                    onDescriptionChange={this.handleDescriptionChange}
+                    onPriceChange={this.handlePriceChange}
+                    onQuantityChange={this.handleQuantityChange}
+                    />
+                )
     }
 });
 
+
+
 var styles = {
-        thumbnail: {
+            thumbnail: {
             textAlign: 'center',
             marginLeft: 'auto',
             marginRight: 'auto',
             },
-        image: {
-            height: '200px', display: 'block'
-        }
+            image: {
+            height: '200px', 
+            display: 'block'
+            }
 }
 
 var ProductCardComponent = React.createClass( {
@@ -115,12 +130,12 @@ var ProductCardComponent = React.createClass( {
                         </div>
                     </div>
                 </div>
-        );
+                );
     }
 });
 
 ProductCardComponent.propTypes = {
-    image: React.PropTypes.string.isRequired,
+                    image: React.PropTypes.string.isRequired,
     title: React.PropTypes.string.isRequired,
     price: React.PropTypes.number.isRequired,
 };
@@ -130,24 +145,21 @@ var ProductListComponent = function( props ) {
     var productCards = props.products.map( function( product, index ) {
         return (
             <ProductCardComponent
-                key={index}
-                image={product.image}
-                title={product.title}
-                price={product.price}
-                />
-        );
+                    key={index}
+                    image={product.image}
+                    title={product.title}
+                    price={product.price}
+                    />
+                );
     });
     return ( <div className="row">{productCards} </div>);
 };
 
-
-
-
 var ProductListContainer = React.createClass({
-    getInitialState: function() {
+                    getInitialState: function() {
         return {
-          products: [] 
-          
+                    products: []
+
         };
     },
 
@@ -155,38 +167,21 @@ var ProductListContainer = React.createClass({
         var self = this;
         axios.get('https://itakademija.herokuapp.com/api/products')
         .then(function (response) {
-            self.setState({ products: response.data });
-        })
+                    self.setState( { products: response.data });
+                })
         .catch(function (error) {
-          console.log(error);
-        })
+                    console.log( error );
+                })
     },
     render: function() {
         return <ProductListComponent products={this.state.products} />
-  }
+                }
 });
 
 ProductListComponent.propTypes = {
-    products: React.PropTypes.array.isRequired,
+                    products: React.PropTypes.array.isRequired,
 };
 
-var myProducts = [
-    {
-        image: 'https://www.usa.canon.com/internet/wcm/connect/us/0265b57f-d9dd-46fc-b0c6-460b0ee67488/t6s_3q-675x450.jpg?MOD=AJPERES&CACHEID=ROOTWORKSPACE.Z18_P1KGHJ01L85180AUEPQQJ53034-0265b57f-d9dd-46fc-b0c6-460b0ee67488-l20WdTS',
-        title: 'Canon 550D',
-        price: 100
-    },
-    {
-        image: 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQ4C288aLyqFXAVm7kIXDQLCgEufb58wLK6NA5LdzbwW1MKCvBP',
-        title: 'Canon 50D',
-        price: 500
-    },
-    {
-        image: 'https://shop.usa.canon.com/wcsstore/ExtendedSitesCatalogAssetStore/35706_1_xl.jpg',
-        title: 'Canon 1D',
-        price: 1500
-    }
-];
 
 var App = function(props) {
     return <div>{props.children}</div>;
@@ -195,23 +190,18 @@ var App = function(props) {
 var NoMatch = function(props) {
     return <div>Route did not match</div>;
 };
-  
-var ProductListPage = function() {
-    return <ProductListComponent products={myProducts} />
-} 
-
 
 var Router = window.ReactRouter.Router;
 var Route = window.ReactRouter.Route;
 var IndexRoute = window.ReactRouter.IndexRoute;
- 
+
 ReactDOM.render((
         <Router history={window.ReactRouter.hashHistory}>
-            <Route path="/" component={App}>
-                <Route path="/products" component={ProductListContainer} />
-                <Route path="/admin/products/new" component={ProductAdministrationComponent} />
-                <Route path="/admin/products/:id" component={ProductAdministrationComponent} />
-                <Route path="*" component={NoMatch}/>
-            </Route>
-        </Router>
+                    <Route path="/" component={App}>
+                        <Route path="/products" component={ProductListContainer} />
+                        <Route path="/admin/products/new" component={ProductAdministrationContainer} />
+                        <Route path="/admin/products/:id" component={ProductAdministrationContainer} />
+                        <Route path="*" component={NoMatch} />
+                    </Route>
+                </Router>
 ), document.getElementById('root'));
